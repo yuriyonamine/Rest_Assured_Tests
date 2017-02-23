@@ -37,6 +37,34 @@ public class LeilaoRestServiceTest {
 		
 		int quantidadeDeLeiloes = xmlPath.getInt("int");
 		
-		assertEquals(2, quantidadeDeLeiloes);
+		assertEquals(5, quantidadeDeLeiloes);
+	}
+	
+	@Test
+	public void deveAdicionarLeiloes(){
+		Usuario usuarioEsperado = new Usuario(1L, "Usuario Leilao", "leilao@hotmail.com");
+		Leilao leilaoEsperado = new Leilao(1L, "Leilaozao", 1000.0, usuarioEsperado, false);
+
+		XmlPath xmlPath = given()
+				.header("Accept", "application/xml")
+				.contentType("application/xml")
+				.body(leilaoEsperado)
+				.expect()
+				.statusCode(200)
+				.post("/leiloes")
+				.xmlPath();
+		
+		Leilao leilao = xmlPath.getObject("leilao", Leilao.class);
+		
+		assertEquals(leilaoEsperado.getNome(), leilao.getNome());
+		
+		given()
+		.contentType("application/xml")
+		.body(leilao)
+		.expect().statusCode(200)
+		.delete("/leiloes/deletar")
+		.asString();
+		
+				
 	}
 }
